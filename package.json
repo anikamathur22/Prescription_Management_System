@@ -1,10 +1,12 @@
 {
   "name": "final-project",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "backend/server.js",
   "scripts": {
-    "dev": "nodemon backend/server.js",
-    "start": "react-scripts start"
+    "dev": "cross-env NODE_ENV=development nodemon backend/server.js",
+    "start": "cross-env NODE_ENV=production node backend/server.js",
+    "start-client": "react-scripts start",
+    "build": "npm install && npm install --prefix frontend"
   },
   "type": "module",
   "keywords": [],
@@ -22,6 +24,7 @@
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.9"
   }
 }

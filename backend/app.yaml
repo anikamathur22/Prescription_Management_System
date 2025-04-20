@@ -1,0 +1,18 @@
+runtime: nodejs22
+
+env: standard
+
+instance_class: F2
+
+
+
+env_variables:
+  MONGO_URI: "mongodb+srv://anikamathur2019:FErlLw23Gna3oNGS@cluster0.nbbxr.mongodb.net/"  # Replace with your actual MongoDB URI
+
+handlers:
+  - url: /api/.*  # API endpoint routing
+    script: auto
+
+  - url: /.*  # Static files for the client
+    static_files: client/build/index.html
+    upload: client/build/index.html
