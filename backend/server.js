@@ -197,7 +197,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/build")));// "..", "client", "build")));
   // For any route that doesn't match the API, serve the React index.html
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "App.js"));// "..", "client", "build", "index.html"));
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));// "..", "client", "build", "index.html"));
   });
 }
 
