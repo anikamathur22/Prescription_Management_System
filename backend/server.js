@@ -194,20 +194,34 @@ app.post("/api/reports", async (req, res) => {
 
 
 
-import path from 'path';
-const __dirname = path.resolve();
+// import path from 'path';
+// const __dirname = path.resolve();
 
-// Serve static files from React's build directory in production
+// // Serve static files from React's build directory in production
+// if (process.env.NODE_ENV === "production") {
+//   // Set the static folder to the build folder in your React app
+//   app.use(express.static(path.join(__dirname, "frontend")));// "..", "client", "build")));
+//   // For any route that doesn't match the API, serve the React index.html
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));// "..", "client", "build", "index.html"));
+//   });
+// }
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from React's build folder
 if (process.env.NODE_ENV === "production") {
-  // Set the static folder to the build folder in your React app
-  app.use(express.static(path.join(__dirname, "/frontend/build")));// "..", "client", "build")));
-  // For any route that doesn't match the API, serve the React index.html
+  app.use(express.static(path.join(__dirname, "../frontend", "build")));
+
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));// "..", "client", "build", "index.html"));
+    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
   });
 }
 
-
+// C:\Anika's Folder\Purdue Classes\CS 348\Cloud Final Project\frontend\build\index.html
+// C:\Anika's Folder\Purdue Classes\CS 348\Cloud Final Project\backend\frontend\build\index.html
 
 // Server Listener
 const PORT = process.env.PORT || 5000;
