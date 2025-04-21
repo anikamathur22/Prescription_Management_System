@@ -66,12 +66,33 @@ const ReportPage = ({ setScreen }) => {
   };
 
   // Generate report
+  // const generateReport = async () => {
+  //   try {
+  //     const response = await axios.post(`${API_URL}/reports`, filters);
+  //     setReportData({
+  //       prescriptions: response.data.data,
+  //       stats: response.data.stats
+  //     });
+  //   } catch (error) {
+  //     console.error("Error generating report:", error);
+  //   }
+  // };
+
+  // Inside the generateReport function in ReportPage.js
   const generateReport = async () => {
     try {
       const response = await axios.post(`${API_URL}/reports`, filters);
+      
+      // Handle the case where stats might not be included in the response
       setReportData({
         prescriptions: response.data.data,
-        stats: response.data.stats
+        stats: response.data.stats || {
+          totalPrescriptions: response.data.data.length,
+          totalAmount: response.data.data.reduce((sum, p) => sum + (p.amount || 0), 0),
+          averageAmount: response.data.data.length > 0 
+            ? (response.data.data.reduce((sum, p) => sum + (p.amount || 0), 0) / response.data.data.length).toFixed(2)
+            : 0
+        }
       });
     } catch (error) {
       console.error("Error generating report:", error);

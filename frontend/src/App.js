@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import ReportPage from "./ReportPage";  // Add this import
+// import ReportPage from "frontend/src/ReportPage.js"
 import {
   Button,
   TextField,
@@ -307,5 +308,3 @@ const App = () => {
 };
 
 export default App;
-
-

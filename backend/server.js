@@ -162,6 +162,36 @@ app.get("/api/doctors", async (req, res) => {
 });
 
 // Reports Route
+// app.post("/api/reports", async (req, res) => {
+//   try {
+//     const sanitizedStartDate = sanitizeInput(req.body.startDate, { trimWhitespace: true }).sanitized;
+//     const sanitizedEndDate = sanitizeInput(req.body.endDate, { trimWhitespace: true }).sanitized;
+//     const sanitizedDoctorId = sanitizeInput(req.body.doctorId, { trimWhitespace: true }).sanitized;
+//     const sanitizedPrescriptionName = sanitizeInput(req.body.prescription_name, { trimWhitespace: true, maxLength: 100 }).sanitized;
+
+//     const query = {};
+//     if (sanitizedStartDate && sanitizedEndDate) {
+//       query.order_time = {
+//         $gte: new Date(sanitizedStartDate),
+//         $lte: new Date(sanitizedEndDate)
+//       };
+//     }
+//     if (sanitizedDoctorId) {
+//       query.doctor_id = sanitizedDoctorId;
+//     }
+//     if (sanitizedPrescriptionName) {
+//       query.prescription_name = { $regex: sanitizedPrescriptionName, $options: "i" };
+//     }
+
+//     const prescriptions = await Prescription.find(query).populate("doctor_id", "first_name last_name");
+
+//     res.json({ success: true, data: prescriptions });
+//   } catch (error) {
+//     console.error("Error generating report:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// });
+// Update your existing /api/reports endpoint
 app.post("/api/reports", async (req, res) => {
   try {
     const sanitizedStartDate = sanitizeInput(req.body.startDate, { trimWhitespace: true }).sanitized;
@@ -185,9 +215,78 @@ app.post("/api/reports", async (req, res) => {
 
     const prescriptions = await Prescription.find(query).populate("doctor_id", "first_name last_name");
 
-    res.json({ success: true, data: prescriptions });
+    // Calculate statistics
+    const totalPrescriptions = prescriptions.length;
+    const totalAmount = prescriptions.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const averageAmount = totalPrescriptions > 0 ? (totalAmount / totalPrescriptions).toFixed(2) : 0;
+    
+    // Count prescriptions by doctor
+    const prescriptionsByDoctor = {};
+    prescriptions.forEach(p => {
+      if (p.doctor_id) {
+        const doctorName = `${p.doctor_id.first_name} ${p.doctor_id.last_name}`;
+        prescriptionsByDoctor[doctorName] = (prescriptionsByDoctor[doctorName] || 0) + 1;
+      }
+    });
+    
+    // Count prescriptions by name
+    const prescriptionsByName = {};
+    prescriptions.forEach(p => {
+      if (p.prescription_name) {
+        prescriptionsByName[p.prescription_name] = (prescriptionsByName[p.prescription_name] || 0) + 1;
+      }
+    });
+    
+    // Return both prescriptions and statistics
+    res.json({ 
+      success: true, 
+      data: prescriptions,
+      stats: {
+        totalPrescriptions,
+        totalAmount,
+        averageAmount,
+        prescriptionsByDoctor,
+        prescriptionsByName
+      }
+    });
   } catch (error) {
     console.error("Error generating report:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+// Add this to your backend server.js file
+app.get("/api/report-filters", async (req, res) => {
+  try {
+    // Get unique prescription names
+    const prescriptions = await Prescription.find().distinct("prescription_name");
+    
+    // Get doctors with their prescription counts
+    const doctors = await Doctor.find();
+    
+    // Count prescriptions for each doctor
+    const doctorsWithCounts = await Promise.all(
+      doctors.map(async (doctor) => {
+        const prescriptionCount = await Prescription.countDocuments({ doctor_id: doctor._id });
+        return {
+          _id: doctor._id,
+          first_name: doctor.first_name,
+          last_name: doctor.last_name,
+          prescriptionCount
+        };
+      })
+    );
+    
+    res.json({ 
+      success: true, 
+      data: {
+        prescriptionNames: prescriptions,
+        doctors: doctorsWithCounts
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching filter options:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
@@ -218,6 +317,7 @@ if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
   });
+
 }
 
 // C:\Anika's Folder\Purdue Classes\CS 348\Cloud Final Project\frontend\build\index.html
