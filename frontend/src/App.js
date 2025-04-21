@@ -18,7 +18,7 @@ import {
 import { Delete, Edit, Close } from "@mui/icons-material";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://prescription-management-system.onrender.com/api"; // "http://localhost:5000/api";
 
 const App = () => {
   const [screen, setScreen] = useState("home");

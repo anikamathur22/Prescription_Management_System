@@ -19,7 +19,9 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
+// const API_URL = "http://localhost:5000/api";
+// const API_URL = process.env.MONGO_URI; 
+const API_URL = "https://prescription-management-system.onrender.com/api"; 
 
 const ReportPage = ({ setScreen }) => {
   // State for filters
