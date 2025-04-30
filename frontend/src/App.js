@@ -159,7 +159,7 @@ const App = () => {
     <Container style={{ textAlign: "center", marginTop: "50px" }}>
       {screen === "home" && (
         <>
-          <Typography variant="h4">Doctor Portal 2</Typography>
+          <Typography variant="h4">Doctor Portal</Typography>
           <Button variant="contained" onClick={() => setScreen("manage")}>
             Manage Prescriptions
           </Button>

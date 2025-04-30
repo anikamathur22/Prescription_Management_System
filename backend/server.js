@@ -20,6 +20,13 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+mongoose.connection.once('open', () => {
+    console.log('Connected to MongoDB');
+    Doctor.syncIndexes();
+    Prescription.syncIndexes();
+  });
+
+  
 // [The rest of your code remains unchanged...]
 
 
