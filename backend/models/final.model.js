@@ -41,8 +41,6 @@ const prescriptionSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Index for prescription_name (regex search support)
-prescriptionSchema.index({ prescription_name: 1 });
 
 // Index for doctor_id (used in multiple queries)
 prescriptionSchema.index({ doctor_id: 1 });
