@@ -168,36 +168,7 @@ app.get("/api/doctors", async (req, res) => {
   }
 });
 
-// Reports Route
-// app.post("/api/reports", async (req, res) => {
-//   try {
-//     const sanitizedStartDate = sanitizeInput(req.body.startDate, { trimWhitespace: true }).sanitized;
-//     const sanitizedEndDate = sanitizeInput(req.body.endDate, { trimWhitespace: true }).sanitized;
-//     const sanitizedDoctorId = sanitizeInput(req.body.doctorId, { trimWhitespace: true }).sanitized;
-//     const sanitizedPrescriptionName = sanitizeInput(req.body.prescription_name, { trimWhitespace: true, maxLength: 100 }).sanitized;
 
-//     const query = {};
-//     if (sanitizedStartDate && sanitizedEndDate) {
-//       query.order_time = {
-//         $gte: new Date(sanitizedStartDate),
-//         $lte: new Date(sanitizedEndDate)
-//       };
-//     }
-//     if (sanitizedDoctorId) {
-//       query.doctor_id = sanitizedDoctorId;
-//     }
-//     if (sanitizedPrescriptionName) {
-//       query.prescription_name = { $regex: sanitizedPrescriptionName, $options: "i" };
-//     }
-
-//     const prescriptions = await Prescription.find(query).populate("doctor_id", "first_name last_name");
-
-//     res.json({ success: true, data: prescriptions });
-//   } catch (error) {
-//     console.error("Error generating report:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
 // Update your existing /api/reports endpoint
 app.post("/api/reports", async (req, res) => {
   try {
@@ -208,10 +179,12 @@ app.post("/api/reports", async (req, res) => {
 
     const query = {};
     if (sanitizedStartDate && sanitizedEndDate) {
-      query.order_time = {
-        $gte: new Date(sanitizedStartDate),
-        $lte: new Date(sanitizedEndDate)
-      };
+      const start = new Date(sanitizedStartDate);
+      const end = new Date(sanitizedEndDate);
+      end.setHours(23, 59, 59, 999);
+
+      query.order_time = { $gte: start, $lte: end };
+
     }
     if (sanitizedDoctorId) {
       query.doctor_id = sanitizedDoctorId;
